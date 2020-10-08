@@ -1,25 +1,22 @@
 // RotatingTranslatedTriangle.js (c) 2012 matsuda
 // Vertex shader program..
-var VSHADER_SOURCE = [
-  'attribute vec4 a_Position;',
-  'uniform mat4 u_ModelMatrix;',
-  'void main() {',
-  '  gl_Position = u_ModelMatrix * a_Position;\n',
-  '}',
-].join('\n');
-  
+var VSHADER_SOURCE =
+  'attribute vec4 a_Position;\n' +
+  'uniform mat4 u_ModelMatrix;\n' +
+  'void main() {\n' +
+  '  gl_Position = u_ModelMatrix * a_Position;\n' +
+  '}\n';
 
 // Fragment shader program
-var FSHADER_SOURCE = [
-  'uniform int u_colr;',
-  'void main() {',
-  '   if(u_colr == 0) {',
-  '       gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);', // RED if u_colr==0
-  '   } else { ',
-  '       gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);', // GREEN otherwise
-  '   };',
-  '}'
-].join('\n');
+var FSHADER_SOURCE =
+  'uniform int u_colr;\n' +
+  'void main() {\n' +
+  '   if(u_colr == 0) {' +
+  '       gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' + // RED if u_colr==0
+  '   } else { '+
+  '       gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);\n' + // GREEN otherwise
+  '   }\n;' +
+  '}\n';
 
 // Rotation angle (degrees/second)
 var ANGLE_STEP = 45.0;
@@ -144,6 +141,7 @@ function draw(gl, n, currentAngle, modelMatrix, u_ModelMatrix, u_colrLoc) {
   // Draw the triangle
   gl.drawArrays(gl.TRIANGLES, 0, n);
 //--------------------------------
+
 }
 
 // Last time that this function was called:  (used for animation timing)
