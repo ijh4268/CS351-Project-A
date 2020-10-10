@@ -236,36 +236,9 @@ function initVertexBuffer() {
      	// Face 3: (base side)  
     -c30, -0.5,  0.0, 1.0, 		0.0,  1.0,  0.0, 	// Node 3
      0.0,  1.0,  0.0, 1.0,  	1.0,  0.0,  0.0,	// Node 2
-		 c30, -0.5,  0.0, 1.0, 		0.0,  0.0,  1.0, 	// Node 1
-
-		 //! Pyramid (Part 1)
-
-		 //* Bottom Face
-		 0.0,  0.0,  0.0, 1.0,    0.0,  1.0,  0.0, // Node 0 GREEN
-		 0.0,  0.0, -1.0, 1.0,    1.0,  0.0,  0.0, // Node 1 RED
-		 1.0,  0.0, -1.0, 1.0,    0.0,  0.0,  1.0, // Node 2 BLUE
-		 0.0,  0.0,  0.0, 1.0,    0.0,  1.0,  0.0, // Node 0 GREEN
-		 1.0,  0.0, -1.0, 1.0,    0.0,  0.0,  1.0, // Node 2 BLUE
-		 1.0,  0.0,  0.0, 1.0,    1.0,  0.0,  1.0, // Node 3 MAGENTA
-		 //* Front Face
-		 0.0,  0.0,  0.0, 1.0,    0.0,  1.0,  0.0, // Node 0 GREEN
-		 1.0,  0.0,  0.0, 1.0,    1.0,  0.0,  1.0, // Node 3 MAGENTA
-		 0.5,  1.0, -0.5, 1.0,    0.0,  1.0,  1.0, // Node 4 CYAN
-		 //* Right Face
-		 1.0,  0.0,  0.0, 1.0,    1.0,  0.0,  1.0, // Node 3 MAGENTA
-		 1.0,  0.0, -1.0, 1.0,    0.0,  0.0,  1.0, // Node 2 BLUE
-		 0.5,  1.0, -0.5, 1.0,    0.0,  1.0,  1.0, // Node 4 CYAN
-		 //* Back Face
-		 1.0,  0.0, -1.0, 1.0,    0.0,  0.0,  1.0, // Node 2 BLUE
-		 0.0,  0.0, -1.0, 1.0,    1.0,  0.0,  0.0, // Node 1 RED
-		 0.5,  1.0, -0.5, 1.0,    0.0,  1.0,  1.0, // Node 4 CYAN
-		 //* Left Face
-		 0.0,  0.0, -1.0, 1.0,    1.0,  0.0,  0.0, // Node 1 RED
-		 0.0,  0.0,  0.0, 1.0,    0.0,  1.0,  0.0, // Node 0 GREEN
-		 0.5,  1.0, -0.5, 1.0,    0.0,  1.0,  1.0, // Node 4 CYAN
+     c30, -0.5,  0.0, 1.0, 		0.0,  0.0,  1.0, 	// Node 1
   ]);
-	g_vertsMax = 30;		// 12 tetrahedron vertices.
-											// 18 Pyramid vertices
+  g_vertsMax = 12;		// 12 tetrahedron vertices.
   								// we can also draw any subset of these we wish,
   								// such as the last 3 vertices.(onscreen at upper right)
 	
@@ -337,15 +310,15 @@ function drawTetra() {
 }
 
 function drawWedge() {
-	gl.drawArrays(gl.TRIANGLES, 6, 6);
+	gl.drawArrays(gl.TRIANGLES, 6,6);
 }
 
 function drawPart1() {
-	gl.drawArrays(gl.TRIANGLES, 12, 18);
+
 }
 
 function drawPart2() {
-
+	
 }
 
 function drawAll() {
@@ -364,15 +337,7 @@ function drawAll() {
 	clrColr = new Float32Array(4);
 	clrColr = gl.getParameter(gl.COLOR_CLEAR_VALUE);
 	// console.log("clear value:", clrColr);
-
-	g_modelMatrix.setTranslate(-0.7, 0.4, 0); // Discard old matrix; new matrix at origin of CVV
-	g_modelMatrix.scale(0.5, 0.5, 0.5);
-	g_modelMatrix.scale(1, 1, -1);
-
-	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements); // Send matrix data to the GPU
-
-	drawPart1(); // Draw Pyramid
-
+	
   //-------Draw Spinning Tetrahedron
   g_modelMatrix.setTranslate(-0.4,-0.4, 0.0);  // 'set' means DISCARD old matrix,
   						// (drawing axes centered in CVV), and then make new
@@ -381,14 +346,14 @@ function drawAll() {
   																				// to match WebGL display canvas.
   g_modelMatrix.scale(0.5, 0.5, 0.5);
   						// if you DON'T scale, tetra goes outside the CVV; clipped!
-	g_modelMatrix.rotate(g_angle01, 0, 1, 0);  // Make new drawing axes that
+  g_modelMatrix.rotate(g_angle01, 0, 1, 0);  // Make new drawing axes that
 
   // DRAW TETRA:  Use this matrix to transform & draw 
   //						the first set of vertices stored in our VBO:
   		// Pass our current matrix to the vertex shaders:
   gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
   		// Draw triangles: start at vertex 0 and draw 12 vertices
-	drawTetra();
+  drawTetra();
 
   // NEXT, create different drawing axes, and...
   g_modelMatrix.setTranslate(0.4, 0.4, 0.0);  // 'set' means DISCARD old matrix,
@@ -430,7 +395,8 @@ function drawAll() {
 	//						the different set of vertices stored in our VBO:
   gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
   		// Draw only the last 2 triangles: start at vertex 6, draw 6 vertices
-	drawWedge();
+  drawWedge();
+
 }
 
 // Last time that this function was called:  (used for animation timing)

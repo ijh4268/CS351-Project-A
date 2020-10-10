@@ -89,13 +89,13 @@ function main() {
 function initVertexBuffers(gl) {
 //==============================================================================
 // first, create an array with all our vertex attribute values:
-  var vertexData = new Float32Array([
-     0.0,  0.5, 0.0, 1.0,  5.0,	// CAREFUL! I made these into 4D points/ vertices: x,y,z,w.
-    -0.2,  0.0, 0.0, 1.0,	10.0, // new point!  (? What happens if I make w=0 instead of 1.0?)
-    -0.5, -0.5, 0.0, 1.0, 15.0,  
-     0.0, -0.2, 0.0, 1.0, 20.0, // new point!
-     0.5, -0.5, 0.0, 1.0,	25.0, // 
-     0.2,  0.0, 0.0, 1.0, 30.0, // new point!  (note we need a trailing comma here)
+  var vertices = new Float32Array([
+     0.0,  0.5, 0.0, 1.0,	// CAREFUL! I made these into 4D points/ vertices: x,y,z,w.
+    -0.2,  0.0, 0.0, 1.0,	// new point!  (? What happens if I make w=0 instead of 1.0?)
+    -0.5, -0.5, 0.0, 1.0,   
+     0.0, -0.2, 0.0, 1.0, // new point!
+     0.5, -0.5, 0.0, 1.0,	// 
+     0.2,  0.0, 0.0, 1.0, // new point!  (note we need a trailing comma here)
      
   ]);
   var numVertices = 6; // The number of vertices
@@ -116,9 +116,7 @@ function initVertexBuffers(gl) {
   // Bind the buffer object to target
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
   // COPY data from our 'vertices' array into the vertex buffer object in GPU:
-  gl.bufferData(gl.ARRAY_BUFFER, vertexData, gl.STATIC_DRAW);
-
-  var FSIZE = vertexData.BYTES_PER_ELEMENT;
+  gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 
   var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
   if (a_Position < 0) {
@@ -126,7 +124,7 @@ function initVertexBuffers(gl) {
     return -1;
   }
   // Assign the buffer object to a_Position variable
-  gl.vertexAttribPointer(a_Position, 4, gl.FLOAT, false, FSIZE * 5, 0);
+  gl.vertexAttribPointer(a_Position, 4, gl.FLOAT, false, 0, 0);
   // vertexAttributePointer(index, x,y,z,w size=4, type=FLOAT, 
   // NOT normalized, NO stride)
 
@@ -138,7 +136,7 @@ function initVertexBuffers(gl) {
   gl.bufferData(gl.ARRAY_BUFFER, sizes, gl.STATIC_DRAW);
   var a_PointSize = gl.getAttribLocation(gl.program, 'a_PointSize');
 
-  gl.vertexAttribPointer(a_PointSize, 1, gl.FLOAT, false, FSIZE * 5, FSIZE * 4);
+  gl.vertexAttribPointer(a_PointSize, 1, gl.FLOAT, false, 0 , 0);
   gl.enableVertexAttribArray(a_PointSize);
 
   return numVertices;

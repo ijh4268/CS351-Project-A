@@ -236,13 +236,9 @@ function initVertexBuffer() {
      	// Face 3: (base side)  
     -c30, -0.5,  0.0, 1.0, 		0.0,  1.0,  0.0, 	// Node 3
      0.0,  1.0,  0.0, 1.0,  	1.0,  0.0,  0.0,	// Node 2
-		 c30, -0.5,  0.0, 1.0, 		0.0,  0.0,  1.0, 	// Node 1
-		 // New Triangle
-		 0.0,  0.0,  0.0, 1.0,    0.5,  0.5,  0.5,  // Gray at origin
-		 0.5,  0.0,  0.0, 1.0,    1.0,  1.0,  0.0,  // yellow
-		 0.0,  0.5,  0.0, 1.0,    0,0,  1.0,  1.0,  // cyan
+     c30, -0.5,  0.0, 1.0, 		0.0,  0.0,  1.0, 	// Node 1
   ]);
-  g_vertsMax = 15;		// 15 tetrahedron vertices.
+  g_vertsMax = 12;		// 12 tetrahedron vertices.
   								// we can also draw any subset of these we wish,
   								// such as the last 3 vertices.(onscreen at upper right)
 	
@@ -309,22 +305,6 @@ function initVertexBuffer() {
 */
 }
 
-// function drawPart1() {
-
-// }
-
-// function drawPart2() {
-	
-// }
-
-// function drawTetra() {
-	
-// }
-
-// function drawWedge() {
-	
-// }
-
 function drawAll() {
 //==============================================================================
   // Clear <canvas>  colors AND the depth buffer
@@ -341,11 +321,6 @@ function drawAll() {
 	clrColr = new Float32Array(4);
 	clrColr = gl.getParameter(gl.COLOR_CLEAR_VALUE);
 	// console.log("clear value:", clrColr);
-
-	//-------Draw Triangle
-	g_modelMatrix.setTranslate(0, 0, 0); // move drawing axes to CVV; discard any previous contents.
-	gl.uniform4fv(g_modelMatLoc, false, g_modelMatrix.elements) // pass current matrix to vertex shaders
-	gl.drawArrays(gl.TRIANGLES, 12, 3); // Draw triangles: start at vertex 12 and draw 3 vertices
 	
   //-------Draw Spinning Tetrahedron
   g_modelMatrix.setTranslate(-0.4,-0.4, 0.0);  // 'set' means DISCARD old matrix,
@@ -362,7 +337,7 @@ function drawAll() {
   		// Pass our current matrix to the vertex shaders:
   gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
   		// Draw triangles: start at vertex 0 and draw 12 vertices
-	gl.drawArrays(gl.TRIANGLES, 0, 12);
+  gl.drawArrays(gl.TRIANGLES, 0, 12);
 
   // NEXT, create different drawing axes, and...
   g_modelMatrix.setTranslate(0.4, 0.4, 0.0);  // 'set' means DISCARD old matrix,
@@ -404,7 +379,7 @@ function drawAll() {
 	//						the different set of vertices stored in our VBO:
   gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
   		// Draw only the last 2 triangles: start at vertex 6, draw 6 vertices
-	gl.drawArrays(gl.TRIANGLES, 6,6);
+  gl.drawArrays(gl.TRIANGLES, 6,6);
 
 }
 
