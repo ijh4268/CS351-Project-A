@@ -70,6 +70,9 @@ var g_lastMS = Date.now();    			// Timestamp for most-recently-drawn image;
 var g_angle01 = 0;                  // initial rotation angle
 var g_angle01Rate = 45.0;           // rotation speed, in degrees/second 
 
+var g_angle02 = 180.0;
+var g_angle02Rate = 20.0;
+
 //------------For mouse click-and-drag: -------------------------------
 var g_isDrag=false;		// mouse-drag: true when user holds down mouse button
 var g_xMclik=0.0;			// last mouse button-down position (in CVV coords)
@@ -179,7 +182,7 @@ function main() {
   // ANIMATION: create 'tick' variable whose value is this function:
   //----------------- 
   var tick = function() {
-    g_angle01 = animate(g_angle01);  // Update the rotation angle
+    animate();  // Update the rotation angle
     drawAll();   // Draw all parts
 //    console.log('g_angle01=',g_angle01.toFixed(5)); // put text in console.
 
@@ -263,8 +266,63 @@ function initVertexBuffer() {
 		 0.0,  0.0, -1.0, 1.0,    1.0,  0.0,  0.0, // Node 1 RED
 		 0.0,  0.0,  0.0, 1.0,    0.0,  1.0,  0.0, // Node 0 GREEN
 		 0.5,  1.0, -0.5, 1.0,    0.0,  1.0,  1.0, // Node 4 CYAN
+
+		 //! Cube (Part 2) (because I'm boring)
+		 /* 
+			 Nodes:
+				 -1.0, -1.0, -1.0,    1.0,  0.67,  0.0,  // Node 0 ORANGE
+				 -1.0, -1.0,  1.0,		1.0,  1.0 ,  0.0,  // Node 1 YELLOW
+					1.0, -1.0,  1.0,		1.0,  1.0 ,  0.63, // Node 2 PURPLE
+				  1.0, -1.0, -1.0,		1.0,  0.0 ,  0.0,  // Node 3 RED
+				 -1.0,  1.0, -1.0,    0.0,  0.0 ,  0.0,  // Node 4 BLACK
+				 -1.0,  1.0,  1.0,		1.0,  1.0 ,  1.0,  // Node 5 WHITE
+					1.0,  1.0,  1.0,    0.0,  0.0 ,  1.0,  // Node 6 BLUE
+				 -1.0,  1.0, -1.0,    0.0,  1.0 ,  0.0,  // Node 7 GREEN
+		 */
+		 //* Bottom Face
+		 -1.0, -1.0, -1.0, 1.0,   1.0,  0.67,  0.0,  // Node 0 ORANGE
+		 -1.0, -1.0,  1.0, 1.0, 	1.0,  1.0 ,  0.0,  // Node 1 YELLOW
+			1.0, -1.0,  1.0, 1.0, 	1.0,  1.0 ,  0.63, // Node 2 PURPLE
+		 -1.0, -1.0, -1.0, 1.0,   1.0,  0.67,  0.0,  // Node 0 ORANGE
+			1.0, -1.0,  1.0, 1.0, 	1.0,  1.0 ,  0.63, // Node 2 PURPLE
+		  1.0, -1.0, -1.0, 1.0,		1.0,  0.0 ,  0.0,  // Node 3 RED
+		 //* Top Face
+		 -1.0,  1.0, -1.0, 1.0,   0.0,  0.0 ,  0.0,  // Node 4 BLACK
+		 -1.0,  1.0,  1.0, 1.0,		1.0,  1.0 ,  1.0,  // Node 5 WHITE
+			1.0,  1.0,  1.0, 1.0,   0.0,  0.0 ,  1.0,  // Node 6 BLUE
+		 -1.0,  1.0, -1.0, 1.0,   0.0,  0.0 ,  0.0,  // Node 4 BLACK
+			1.0,  1.0,  1.0, 1.0,   0.0,  0.0 ,  1.0,  // Node 6 BLUE
+		  1.0,  1.0, -1.0, 1.0,   0.0,  1.0 ,  0.0,  // Node 7 GREEN
+		 //* Right Face
+		  1.0, -1.0, -1.0, 1.0,		1.0,  0.0 ,  0.0,  // Node 3 RED
+			1.0,  1.0, -1.0, 1.0,   0.0,  1.0 ,  0.0,  // Node 7 GREEN
+			1.0,  1.0,  1.0, 1.0,   0.0,  0.0 ,  1.0,  // Node 6 BLUE
+			1.0, -1.0, -1.0, 1.0,		1.0,  0.0 ,  0.0,  // Node 3 RED
+			1.0,  1.0,  1.0, 1.0,   0.0,  0.0 ,  1.0,  // Node 6 BLUE
+			1.0, -1.0,  1.0, 1.0,		1.0,  1.0 ,  0.63, // Node 2 PURPLE
+		 //* Left Face 
+		 -1.0, -1.0, -1.0, 1.0,   1.0,  0.67,  0.0,  // Node 0 ORANGE
+		 -1.0, -1.0,  1.0, 1.0,		1.0,  1.0 ,  0.0,  // Node 1 YELLOW
+		 -1.0,  1.0,  1.0, 1.0,		1.0,  1.0 ,  1.0,  // Node 5 WHITE
+		 -1.0, -1.0, -1.0, 1.0,   1.0,  0.67,  0.0,  // Node 0 ORANGE
+		 -1.0,  1.0,  1.0, 1.0,		1.0,  1.0 ,  1.0,  // Node 5 WHITE
+		 -1.0,  1.0, -1.0, 1.0,   0.0,  0.0 ,  0.0,  // Node 4 BLACK
+		 //* Front Face
+		 -1.0, -1.0,  1.0, 1.0,		1.0,  1.0 ,  0.0,  // Node 1 YELLOW
+		  1.0, -1.0,  1.0, 1.0,		1.0,  1.0 ,  0.63, // Node 2 PURPLE
+			1.0,  1.0,  1.0, 1.0,   0.0,  0.0 ,  1.0,  // Node 6 BLUE
+		 -1.0, -1.0,  1.0, 1.0,		1.0,  1.0 ,  0.0,  // Node 1 YELLOW
+			1.0,  1.0,  1.0, 1.0,   0.0,  0.0 ,  1.0,  // Node 6 BLUE
+		 -1.0,  1.0,  1.0, 1.0,		1.0,  1.0 ,  1.0,  // Node 5 WHITE
+			//* Back Face 
+		 -1.0, -1.0, -1.0, 1.0,   1.0,  0.67,  0.0,  // Node 0 ORANGE
+		 -1.0,  1.0, -1.0, 1.0,   0.0,  0.0 ,  0.0,  // Node 4 BLACK
+			1.0,  1.0, -1.0, 1.0,   0.0,  1.0 ,  0.0,  // Node 7 GREEN
+		 -1.0, -1.0, -1.0, 1.0,   1.0,  0.67,  0.0,  // Node 0 ORANGE
+			1.0,  1.0, -1.0, 1.0,   0.0,  1.0 ,  0.0,  // Node 7 GREEN
+			1.0, -1.0, -1.0, 1.0,		1.0,  0.0 ,  0.0,  // Node 3 RED
   ]);
-	g_vertsMax = 30;		// 12 tetrahedron vertices.
+	g_vertsMax = colorShapes.length / 7;		// 12 tetrahedron vertices.
 											// 18 Pyramid vertices
   								// we can also draw any subset of these we wish,
   								// such as the last 3 vertices.(onscreen at upper right)
@@ -345,7 +403,7 @@ function drawPart1() {
 }
 
 function drawPart2() {
-
+	gl.drawArrays(gl.TRIANGLES, 30, 36);
 }
 
 function drawAll() {
@@ -372,14 +430,23 @@ function drawAll() {
 	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements); // Send matrix data to the GPU
 
 	drawPart1(); // Draw Pyramid
+	
+
+	g_modelMatrix.setTranslate(0.5, -0.5, 0);
+	g_modelMatrix.scale(0.3, 0.3, 0.3);
+	g_modelMatrix.rotate(g_angle02, 0, 1, 1);
+
+	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements); // Send matrix to GPU
+
+	drawPart2(); // Draw Cube
 
   //-------Draw Spinning Tetrahedron
-  g_modelMatrix.setTranslate(-0.4,-0.4, 0.0);  // 'set' means DISCARD old matrix,
+  g_modelMatrix.setTranslate(-0.5,-0.5, 0.0);  // 'set' means DISCARD old matrix,
   						// (drawing axes centered in CVV), and then make new
   						// drawing axes moved to the lower-left corner of CVV. 
   g_modelMatrix.scale(1,1,-1);							// convert to left-handed coord sys
   																				// to match WebGL display canvas.
-  g_modelMatrix.scale(0.5, 0.5, 0.5);
+  g_modelMatrix.scale(0.4, 0.4, 0.4);
   						// if you DON'T scale, tetra goes outside the CVV; clipped!
 	g_modelMatrix.rotate(g_angle01, 0, 1, 0);  // Make new drawing axes that
 
@@ -436,22 +503,29 @@ function drawAll() {
 // Last time that this function was called:  (used for animation timing)
 var g_last = Date.now();
 
-function animate(angle) {
+function animate() {
 //==============================================================================
   // Calculate the elapsed time
   var now = Date.now();
   var elapsed = now - g_last;
-  g_last = now;
+	g_last = now;
+	
+	var g_angle01min = -120.0;
+	var g_angle01max =  120.0;
+
+	var g_angle02min = -45.0;
+	var g_angle02max =  45.0;
   
   // Update the current rotation angle (adjusted by the elapsed time)
-  //  limit the angle to move smoothly between +120 and -85 degrees:
-//  if(angle >  120.0 && g_angle01Rate > 0) g_angle01Rate = -g_angle01Rate;
-//  if(angle <  -85.0 && g_angle01Rate < 0) g_angle01Rate = -g_angle01Rate;
+  //  limit the angle to move smoothly between +120 and -120 degrees:
+  if(g_angle01 >  g_angle01max && g_angle01Rate > 0) g_angle01Rate = -g_angle01Rate;
+	if(g_angle01 <  g_angle01min && g_angle01Rate < 0) g_angle01Rate = -g_angle01Rate;
+	
+	if(g_angle02 >  g_angle02max && g_angle02Rate > 0) g_angle02Rate = -g_angle02Rate;
+	if(g_angle02 <  g_angle02min && g_angle02Rate < 0) g_angle02Rate = -g_angle02Rate;
   
-  var newAngle = angle + (g_angle01Rate * elapsed) / 1000.0;
-  if(newAngle > 180.0) newAngle = newAngle - 360.0;
-  if(newAngle <-180.0) newAngle = newAngle + 360.0;
-  return newAngle;
+	g_angle01 = g_angle01 + (g_angle01Rate * elapsed) / 1000.0;
+	g_angle02 = g_angle02 + (g_angle02Rate * elapsed) / 1000.0;
 }
 
 //==================HTML Button Callbacks======================
