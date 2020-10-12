@@ -244,7 +244,7 @@ function initVertexBuffer() {
      0.0,  1.0,  0.0, 1.0,  	1.0,  0.0,  0.0,	// Node 2
 		 c30, -0.5,  0.0, 1.0, 		0.0,  0.0,  1.0, 	// Node 1
 
-		 //! Pyramid
+		 //! Pyramid (Part 1)
 
 		 //* Bottom Face
 		 0.0,  0.0,  0.0, 1.0,    0.0,  1.0,  0.0, // Node 0 GREEN
@@ -356,10 +356,10 @@ function initVertexBuffer() {
 			-1.0,  0.0,  0.01, 1.0,   0.4,  0.0,  0.8,  // Node  3 PURPLE
 			-1.0,  0.0, -1.0 , 1.0,   0.4,  0.0,  0.8,  // Node  9 PURPLE
 			 c60,  s60,  0.01, 1.0,   0.0,  1.0,  1.0,  // Node  5 CYAN	
-			//!----------------------------------------
-			]);
+  ]);
 	g_vertsMax = colorShapes.length / 7;		// 12 tetrahedron vertices.
 																					// 18 Pyramid vertices
+																					// 36 Cube vertices
   								// we can also draw any subset of these we wish,
   								// such as the last 3 vertices.(onscreen at upper right)
 	

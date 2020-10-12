@@ -5,7 +5,7 @@
 // Chapter 4: RotatingTriangle_withButtons.js (c) 2012 matsuda AND
 // Chapter 2: ColoredPoints.js (c) 2012 matsuda
 //
-// merged and modified to become:
+// merged and modified to became:
 //
 // ControlMulti.js for EECS 351-1, 
 //									Northwestern Univ. Jack Tumblin
@@ -212,10 +212,7 @@ function initVertexBuffer() {
 // NOTE!  'gl' is now a global variable -- no longer needed as fcn argument!
 
 	var c30 = Math.sqrt(0.75);					// == cos(30deg) == sqrt(3) / 2
-	var sq2	= Math.sqrt(2.0);		
-	
-	var s60 = Math.sqrt(3)/2.0;      // == sin(60deg) == sqrt(2) / 2
-	var c60 = 0.5;
+	var sq2	= Math.sqrt(2.0);						 
 
   var colorShapes = new Float32Array([
   // Vertex coordinates(x,y,z,w) and color (R,G,B) for a color tetrahedron:
@@ -244,7 +241,7 @@ function initVertexBuffer() {
      0.0,  1.0,  0.0, 1.0,  	1.0,  0.0,  0.0,	// Node 2
 		 c30, -0.5,  0.0, 1.0, 		0.0,  0.0,  1.0, 	// Node 1
 
-		 //! Pyramid
+		 //! Pyramid (Part 1)
 
 		 //* Bottom Face
 		 0.0,  0.0,  0.0, 1.0,    0.0,  1.0,  0.0, // Node 0 GREEN
@@ -270,96 +267,64 @@ function initVertexBuffer() {
 		 0.0,  0.0,  0.0, 1.0,    0.0,  1.0,  0.0, // Node 0 GREEN
 		 0.5,  1.0, -0.5, 1.0,    0.0,  1.0,  1.0, // Node 4 CYAN
 
-			//! 3D Hexagram 
-			/*
-			Nodes:
-			  * Triangle 1
-				1.0,  0.0,  0.0 , 1.0,   0.4,  0.0,  0.8,  // Node  0 PURPLE
-			 -c60,  s60,  0.0 , 1.0,   0.0,  1.0,  0.0,  // Node  1 GREEN
-			 -c60, -s60,  0.0 , 1.0,   0.0,  1.0,  1.0,  // Node  2 CYAN
-				* Triangle 2
-			 -1.0,  0.0,  0.01, 1.0,   0.4,  0.0,  0.8,  // Node  3 PURPLE
-				c60, -s60,  0.01, 1.0,   0.0,  1.0,  0.0,  // Node  4 GREEN
-				c60,  s60,  0.01, 1.0,   0.0,  1.0,  1.0,  // Node  5 CYAN
-
-			 * Triangle 1 (back)
-				1.0,  0.0, -1.0 , 1.0,   0.4,  0.0,  0.8,  // Node  6 PURPLE
-			 -c60,  s60, -1.0 , 1.0,   0.0,  1.0,  0.0,  // Node  7 GREEN
-			 -c60, -s60, -1.0 , 1.0,   0.0,  1.0,  1.0,  // Node  8 CYAN
-			 * Triangle 2 (back)
-			 -1.0,  0.0, -1.01, 1.0,   0.4,  0.0,  0.8,  // Node  9 PURPLE
-				c60, -s60, -1.01, 1.0,   0.0,  1.0,  0.0,  // Node 10 GREEN
-				c60,  s60, -1.01, 1.0,   0.0,  1.0,  1.0,  // Node 11 CYAN
-			*/
-			//* Front Face
-			  1.0,  0.0,  0.0 , 1.0,   0.4,  0.0,  0.8,  // Node  0 PURPLE
-			 -c60,  s60,  0.0 , 1.0,   0.0,  1.0,  0.0,  // Node  1 GREEN
-			 -c60, -s60,  0.0 , 1.0,   0.0,  1.0,  1.0,  // Node  2 CYAN
-
-			 -1.0,  0.0,  0.01, 1.0,   0.4,  0.0,  0.8,  // Node  3 PURPLE
-				c60, -s60,  0.01, 1.0,   0.0,  1.0,  0.0,  // Node  4 GREEN
-				c60,  s60,  0.01, 1.0,   0.0,  1.0,  1.0,  // Node  5 CYAN
-			//* Back Face
-				1.0,  0.0, -1.01, 1.0,   0.4,  0.0,  0.8,  // Node  6 PURPLE
-			 -c60,  s60, -1.01, 1.0,   0.0,  1.0,  0.0,  // Node  7 GREEN
-			 -c60, -s60, -1.01, 1.0,   0.0,  1.0,  1.0,  // Node  8 CYAN
-
-			 -1.0,  0.0, -1.0 , 1.0,   0.4,  0.0,  0.8,  // Node  9 PURPLE
-				c60, -s60, -1.0 , 1.0,   0.0,  1.0,  0.0,  // Node 10 GREEN
-				c60,  s60, -1.0 , 1.0,   0.0,  1.0,  1.0,  // Node 11 CYAN
-			//* Sides
-			//!----------------------------------------
-			  1.0,  0.0,  0.0 , 1.0,   0.4,  0.0,  0.8,  // Node  0 PURPLE
-				1.0,  0.0, -1.01, 1.0,   0.4,  0.0,  0.8,  // Node  6 PURPLE
-			 -c60,  s60, -1.01, 1.0,   0.0,  1.0,  0.0,  // Node  7 GREEN
-
-			 -c60,  s60,  0.0 , 1.0,   0.0,  1.0,  0.0,  // Node  1 GREEN
-			 -c60,  s60, -1.01, 1.0,   0.0,  1.0,  0.0,  // Node  7 GREEN
-				1.0,  0.0,  0.0 , 1.0,   0.4,  0.0,  0.8,  // Node  0 PURPLE
-			//!----------------------------------------
-			 -c60,  s60,  0.0 , 1.0,   0.0,  1.0,  0.0,  // Node  1 GREEN
-			 -c60,  s60, -1.01, 1.0,   0.0,  1.0,  0.0,  // Node  7 GREEN
-			 -c60, -s60, -1.01, 1.0,   0.0,  1.0,  1.0,  // Node  8 CYAN
-			
-			 -c60, -s60,  0.0 , 1.0,   0.0,  1.0,  1.0,  // Node  2 CYAN
-			 -c60, -s60, -1.01, 1.0,   0.0,  1.0,  1.0,  // Node  8 CYAN
-			 -c60,  s60,  0.0 , 1.0,   0.0,  1.0,  0.0,  // Node  1 GREEN
-			//!----------------------------------------
-			 -c60, -s60,  0.0 , 1.0,   0.0,  1.0,  1.0,  // Node  2 CYAN
-			 -c60, -s60, -1.01, 1.0,   0.0,  1.0,  1.0,  // Node  8 CYAN
-			  1.0,  0.0, -1.01, 1.0,   0.4,  0.0,  0.8,  // Node  6 PURPLE
-
-				1.0,  0.0,  0.0 , 1.0,   0.4,  0.0,  0.8,  // Node  0 PURPLE
-				1.0,  0.0, -1.01, 1.0,   0.4,  0.0,  0.8,  // Node  6 PURPLE
-			 -c60, -s60,  0.0 , 1.0,   0.0,  1.0,  1.0,  // Node  2 CYAN
-			//!----------------------------------------
-			 -1.0,  0.0,  0.01, 1.0,   0.4,  0.0,  0.8,  // Node  3 PURPLE
-			 -1.0,  0.0, -1.0 , 1.0,   0.4,  0.0,  0.8,  // Node  9 PURPLE
-				c60, -s60, -1.0 , 1.0,   0.0,  1.0,  0.0,  // Node 10 GREEN
-
-				c60, -s60,  0.01, 1.0,   0.0,  1.0,  0.0,  // Node  4 GREEN
-				c60, -s60, -1.0 , 1.0,   0.0,  1.0,  0.0,  // Node 10 GREEN
-			 -1.0,  0.0,  0.01, 1.0,   0.4,  0.0,  0.8,  // Node  3 PURPLE
-			//!----------------------------------------
-			 c60, -s60,  0.01, 1.0,   0.0,  1.0,  0.0,  // Node  4 GREEN
-			 c60, -s60, -1.0 , 1.0,   0.0,  1.0,  0.0,  // Node 10 GREEN
-			 c60,  s60, -1.0 , 1.0,   0.0,  1.0,  1.0,  // Node 11 CYAN
-
-			 c60,  s60,  0.01, 1.0,   0.0,  1.0,  1.0,  // Node  5 CYAN
-			 c60,  s60, -1.0 , 1.0,   0.0,  1.0,  1.0,  // Node 11 CYAN
-			 c60, -s60,  0.01, 1.0,   0.0,  1.0,  0.0,  // Node  4 GREEN
-			//!----------------------------------------
-			 c60,  s60,  0.01, 1.0,   0.0,  1.0,  1.0,  // Node  5 CYAN
-			 c60,  s60, -1.0 , 1.0,   0.0,  1.0,  1.0,  // Node 11 CYAN
-			-1.0,  0.0, -1.0 , 1.0,   0.4,  0.0,  0.8,  // Node  9 PURPLE
-
-			-1.0,  0.0,  0.01, 1.0,   0.4,  0.0,  0.8,  // Node  3 PURPLE
-			-1.0,  0.0, -1.0 , 1.0,   0.4,  0.0,  0.8,  // Node  9 PURPLE
-			 c60,  s60,  0.01, 1.0,   0.0,  1.0,  1.0,  // Node  5 CYAN	
-			//!----------------------------------------
-			]);
+		 //! Cube (Part 2) (because I'm boring)
+		 /* 
+			 Nodes:
+				 -1.0, -1.0, -1.0,    1.0,  0.67,  0.0,  // Node 0 ORANGE
+				 -1.0, -1.0,  1.0,		1.0,  1.0 ,  0.0,  // Node 1 YELLOW
+					1.0, -1.0,  1.0,		1.0,  1.0 ,  0.63, // Node 2 PURPLE
+				  1.0, -1.0, -1.0,		1.0,  0.0 ,  0.0,  // Node 3 RED
+				 -1.0,  1.0, -1.0,    0.0,  0.0 ,  0.0,  // Node 4 BLACK
+				 -1.0,  1.0,  1.0,		1.0,  1.0 ,  1.0,  // Node 5 WHITE
+					1.0,  1.0,  1.0,    0.0,  0.0 ,  1.0,  // Node 6 BLUE
+				 -1.0,  1.0, -1.0,    0.0,  1.0 ,  0.0,  // Node 7 GREEN
+		 */
+		 //* Bottom Face
+		 -1.0, -1.0, -1.0, 1.0,   1.0,  0.67,  0.0,  // Node 0 ORANGE
+		 -1.0, -1.0,  1.0, 1.0, 	1.0,  1.0 ,  0.0,  // Node 1 YELLOW
+			1.0, -1.0,  1.0, 1.0, 	1.0,  1.0 ,  0.63, // Node 2 PURPLE
+		 -1.0, -1.0, -1.0, 1.0,   1.0,  0.67,  0.0,  // Node 0 ORANGE
+			1.0, -1.0,  1.0, 1.0, 	1.0,  1.0 ,  0.63, // Node 2 PURPLE
+		  1.0, -1.0, -1.0, 1.0,		1.0,  0.0 ,  0.0,  // Node 3 RED
+		 //* Top Face
+		 -1.0,  1.0, -1.0, 1.0,   0.0,  0.0 ,  0.0,  // Node 4 BLACK
+		 -1.0,  1.0,  1.0, 1.0,		1.0,  1.0 ,  1.0,  // Node 5 WHITE
+			1.0,  1.0,  1.0, 1.0,   0.0,  0.0 ,  1.0,  // Node 6 BLUE
+		 -1.0,  1.0, -1.0, 1.0,   0.0,  0.0 ,  0.0,  // Node 4 BLACK
+			1.0,  1.0,  1.0, 1.0,   0.0,  0.0 ,  1.0,  // Node 6 BLUE
+		  1.0,  1.0, -1.0, 1.0,   0.0,  1.0 ,  0.0,  // Node 7 GREEN
+		 //* Right Face
+		  1.0, -1.0, -1.0, 1.0,		1.0,  0.0 ,  0.0,  // Node 3 RED
+			1.0,  1.0, -1.0, 1.0,   0.0,  1.0 ,  0.0,  // Node 7 GREEN
+			1.0,  1.0,  1.0, 1.0,   0.0,  0.0 ,  1.0,  // Node 6 BLUE
+			1.0, -1.0, -1.0, 1.0,		1.0,  0.0 ,  0.0,  // Node 3 RED
+			1.0,  1.0,  1.0, 1.0,   0.0,  0.0 ,  1.0,  // Node 6 BLUE
+			1.0, -1.0,  1.0, 1.0,		1.0,  1.0 ,  0.63, // Node 2 PURPLE
+		 //* Left Face 
+		 -1.0, -1.0, -1.0, 1.0,   1.0,  0.67,  0.0,  // Node 0 ORANGE
+		 -1.0, -1.0,  1.0, 1.0,		1.0,  1.0 ,  0.0,  // Node 1 YELLOW
+		 -1.0,  1.0,  1.0, 1.0,		1.0,  1.0 ,  1.0,  // Node 5 WHITE
+		 -1.0, -1.0, -1.0, 1.0,   1.0,  0.67,  0.0,  // Node 0 ORANGE
+		 -1.0,  1.0,  1.0, 1.0,		1.0,  1.0 ,  1.0,  // Node 5 WHITE
+		 -1.0,  1.0, -1.0, 1.0,   0.0,  0.0 ,  0.0,  // Node 4 BLACK
+		 //* Front Face
+		 -1.0, -1.0,  1.0, 1.0,		1.0,  1.0 ,  0.0,  // Node 1 YELLOW
+		  1.0, -1.0,  1.0, 1.0,		1.0,  1.0 ,  0.63, // Node 2 PURPLE
+			1.0,  1.0,  1.0, 1.0,   0.0,  0.0 ,  1.0,  // Node 6 BLUE
+		 -1.0, -1.0,  1.0, 1.0,		1.0,  1.0 ,  0.0,  // Node 1 YELLOW
+			1.0,  1.0,  1.0, 1.0,   0.0,  0.0 ,  1.0,  // Node 6 BLUE
+		 -1.0,  1.0,  1.0, 1.0,		1.0,  1.0 ,  1.0,  // Node 5 WHITE
+			//* Back Face 
+		 -1.0, -1.0, -1.0, 1.0,   1.0,  0.67,  0.0,  // Node 0 ORANGE
+		 -1.0,  1.0, -1.0, 1.0,   0.0,  0.0 ,  0.0,  // Node 4 BLACK
+			1.0,  1.0, -1.0, 1.0,   0.0,  1.0 ,  0.0,  // Node 7 GREEN
+		 -1.0, -1.0, -1.0, 1.0,   1.0,  0.67,  0.0,  // Node 0 ORANGE
+			1.0,  1.0, -1.0, 1.0,   0.0,  1.0 ,  0.0,  // Node 7 GREEN
+			1.0, -1.0, -1.0, 1.0,		1.0,  0.0 ,  0.0,  // Node 3 RED
+  ]);
 	g_vertsMax = colorShapes.length / 7;		// 12 tetrahedron vertices.
 																					// 18 Pyramid vertices
+																					// 36 Cube vertices
   								// we can also draw any subset of these we wish,
   								// such as the last 3 vertices.(onscreen at upper right)
 	
@@ -434,12 +399,12 @@ function drawWedge() {
 	gl.drawArrays(gl.TRIANGLES, 6, 6);
 }
 
-function drawPyramid() {
+function drawPart1() {
 	gl.drawArrays(gl.TRIANGLES, 12, 18);
 }
 
-function drawHexagram() {
-	gl.drawArrays(gl.TRIANGLES, 30, 48);
+function drawPart2() {
+	gl.drawArrays(gl.TRIANGLES, 30, 36);
 }
 
 function drawAll() {
@@ -465,18 +430,16 @@ pushMatrix(g_modelMatrix);
 	g_modelMatrix.rotate(g_angle01, 1, 1, 0);
 	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements); // Send matrix data to the GPU
 
-	drawPyramid(); // Draw Pyramid
+	drawPart1(); // Draw Pyramid
 
 g_modelMatrix = popMatrix();
 	g_modelMatrix.setTranslate(0.5, -0.5, 0);
 	g_modelMatrix.scale(0.2, 0.2, 0.2);
-
-	var dist = Math.sqrt(g_xMdragTot*g_xMdragTot + g_yMdragTot*g_yMdragTot);
-	g_modelMatrix.rotate(dist*120.0, -g_yMdragTot+0.0001, g_xMdragTot+0.0001, 0.0);
+	g_modelMatrix.rotate(g_angle02, 0, 1, 1);
 
 	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements); // Send matrix to GPU
 
-	drawHexagram(); // Draw Hexagram
+	drawPart2(); // Draw Cube
 
 	//-------Draw Spinning Tetrahedron
   g_modelMatrix.setTranslate(-0.5,-0.5, 0.0);  // 'set' means DISCARD old matrix,
@@ -503,7 +466,7 @@ g_modelMatrix.rotate(90.0, 0.6, -0.6, 0.5);
 g_modelMatrix.scale(0.3, 0.3, 0.3);
 	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
 
-	drawPyramid();
+	drawPart1();
 
 g_modelMatrix = popMatrix();
 
@@ -514,7 +477,7 @@ pushMatrix(g_modelMatrix);
 	g_modelMatrix.scale(0.3, 0.3, 0.3);
 	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
 	
-	drawPyramid();
+	drawPart1();
 g_modelMatrix = popMatrix()
 
 pushMatrix(g_modelMatrix);
@@ -524,7 +487,7 @@ pushMatrix(g_modelMatrix);
 	g_modelMatrix.scale(0.3, 0.3, 0.3);
 	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
 
-	drawPyramid();
+	drawPart1();
 g_modelMatrix = popMatrix();
 
   // NEXT, create different drawing axes, and...
@@ -534,7 +497,40 @@ g_modelMatrix = popMatrix();
   g_modelMatrix.scale(1,1,-1);							// convert to left-handed coord sys
   																				// to match WebGL display canvas.
   g_modelMatrix.scale(0.3, 0.3, 0.3);				// Make it smaller.
+  
+  // Mouse-Dragging for Rotation:
+	//-----------------------------
+	// Attempt 1:  X-axis, then Y-axis rotation:
+/*  						// First, rotate around x-axis by the amount of -y-axis dragging:
+  g_modelMatrix.rotate(-g_yMdragTot*120.0, 1, 0, 0); // drag +/-1 to spin -/+120 deg.
+  						// Then rotate around y-axis by the amount of x-axis dragging
+	g_modelMatrix.rotate( g_xMdragTot*120.0, 0, 1, 0); // drag +/-1 to spin +/-120 deg.
+				// Acts SENSIBLY if I always drag mouse to turn on Y axis, then X axis.
+				// Acts WEIRDLY if I drag mouse to turn on X axis first, then Y axis.
+				// ? Why is is 'backwards'? Duality again!
+*/
+	//-----------------------------
 
+	// Attempt 2: perp-axis rotation:
+							// rotate on axis perpendicular to the mouse-drag direction:
+	var dist = Math.sqrt(g_xMdragTot*g_xMdragTot + g_yMdragTot*g_yMdragTot);
+							// why add 0.001? avoids divide-by-zero in next statement
+							// in cases where user didn't drag the mouse.)
+	g_modelMatrix.rotate(dist*120.0, -g_yMdragTot+0.0001, g_xMdragTot+0.0001, 0.0);
+				// Acts weirdly as rotation amounts get far from 0 degrees.
+				// ?why does intuition fail so quickly here?
+
+	//-------------------------------
+	// Attempt 3: Quaternions? What will work better?
+
+					// YOUR CODE HERE
+
+	//-------------------------------
+	// DRAW 2 TRIANGLES:		Use this matrix to transform & draw
+	//						the different set of vertices stored in our VBO:
+  gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
+  		// Draw only the last 2 triangles: start at vertex 6, draw 6 vertices
+	drawWedge();
 }
 
 // Last time that this function was called:  (used for animation timing)
