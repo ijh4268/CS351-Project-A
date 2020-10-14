@@ -73,18 +73,7 @@ var g_angle01Rate = 45.0;           // rotation speed, in degrees/second
 var g_angle02 = 0;
 var g_angle02Rate = 20.0;
 
-var g_angleLink1 = 0.0;
-var g_angleLink1Rate = 10.0;
-
-var g_angleLink2 = 0.0;
-var g_angleLink2Rate = 15.0;
-
-var g_angleLink3 = 0.0;
-var g_angleLink3Rate = 20.0;
-
-var g_angleHead = 0.0;
-var g_angleHeadRate = 5.0;
-
+var g_
 
 //------------For mouse click-and-drag: -------------------------------
 var g_isDrag=false;		// mouse-drag: true when user holds down mouse button
@@ -164,13 +153,7 @@ function main() {
   // ANIMATION: create 'tick' variable whose value is this function:
   //----------------- 
   var tick = function() {
-		var now = Date.now();
-		
 		animate();  // Update the rotation angle
-		animateSnake();
-		
-		g_last = now;
-
 		drawAll();   // Draw all parts
 		drawHexagram(); // Draw Hexagram
 		drawPyramid();
@@ -189,14 +172,14 @@ function initVertexBuffer() {
 //==============================================================================
 // NOTE!  'gl' is now a global variable -- no longer needed as fcn argument!
 	
-	const s60 = Math.sqrt(3.0)/2.0;      // == sin(60deg) == sqrt(2) / 2
-	const c60 = 0.5;
+	var s60 = Math.sqrt(3.0)/2.0;      // == sin(60deg) == sqrt(2) / 2
+	var c60 = 0.5;
 
-	const s30 = 0.5;
-	const c30 = Math.sqrt(3.0)/2.0;
+	var s30 = 0.5;
+	var c30 = Math.sqrt(3.0)/2.0;
 
 
-  const colorShapes = new Float32Array([
+  var colorShapes = new Float32Array([
 
 		 //! ------------------------ Pyramid ------------------------
 
@@ -459,8 +442,8 @@ function initVertexBuffer() {
 
 function drawPyramid() {
 
-		g_modelMatrix.setTranslate(-0.0, 0.3, 0); // Discard old matrix;
-		g_modelMatrix.scale(0.4, 0.4, 0.4);
+		g_modelMatrix.setTranslate(-0.5, 0.2, 0); // Discard old matrix;
+		g_modelMatrix.scale(0.5, 0.5, 0.5);
 
 		
 		g_modelMatrix.translate(g_translatePyrX, g_translatePyrY, 0.0); 
@@ -476,7 +459,7 @@ function drawPyramid() {
 
 	g_modelMatrix = popMatrix();
 
-		g_modelMatrix.translate(0.5, 1.1, -0.6);
+	g_modelMatrix.translate(0.5, 1.1, -0.6);
 		g_modelMatrix.scale(0.5, 0.5, 0.5);
 		g_modelMatrix.rotate(g_angle01, 1, 0, 0);
 		gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
@@ -497,22 +480,15 @@ function drawHexagram() {
 }
 
 function drawSnake() {
-
-	g_modelMatrix.setTranslate(-0.5, -0.8, 0.0);
+	g_modelMatrix.setTranslate(-0.5, -0.5, 0.0);
 	g_modelMatrix.scale(0.2, 0.2, 0.2);
-	g_modelMatrix.rotate(g_angle01, 0.0, 1.0, 0.0);
 	g_modelMatrix.rotate(140.0, 0.0, 0.0, 1.0);
-	g_modelMatrix.rotate(g_angleLink1, 0.0, 0.0, 1.0);
-	g_modelMatrix.translate(0.0, -1.0, 0.0);
 	pushMatrix(g_modelMatrix);
 	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
-	
 	// * First link
 	gl.drawArrays(gl.TRIANGLES, 66 /* Start index */, 42 /* Num vertices to draw */); // Draw a Concave Hexagon
 
-	g_modelMatrix.rotate(g_angleLink2, 0.0, 0.0, 1.0);
 	g_modelMatrix.translate(0.0, -1.0, 0.0);
-	pushMatrix(g_modelMatrix);
 	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
 	// * Second link
 	gl.drawArrays(gl.TRIANGLES, 66, 42);
@@ -520,22 +496,19 @@ function drawSnake() {
 	g_modelMatrix = popMatrix();
 	pushMatrix(g_modelMatrix);
 
-	g_modelMatrix.rotate(g_angleLink3, 0.0, 0.0, 1.0);
-	g_modelMatrix.translate(0.0, -1.0, 0.0);
+	g_modelMatrix.translate(0.0, -2.0, 0.0);
 	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
-	pushMatrix(g_modelMatrix);
 	// * Third Link
 	gl.drawArrays(gl.TRIANGLES, 66, 42);
 
 	g_modelMatrix = popMatrix();
+	pushMatrix(g_modelMatrix);
 
-	g_modelMatrix.translate(0.0, -0.5, 0.5);
+	g_modelMatrix.translate(0.0, -2.6, 0.0);
 	g_modelMatrix.scale(0.5, 0.5, 0.5);
 	g_modelMatrix.rotate(30.0, 0.0, 0.0, 1.0);
-	g_modelMatrix.rotate(g_angleHead, 0.0, 0.0, 1.0);
-	g_modelMatrix.translate(-0.2, -0.2, 0.0);
 	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
-	// * Head
+
 	gl.drawArrays(gl.TRIANGLES, 18, 48); // Draw 3D Hexagram
 }
 
@@ -559,7 +532,8 @@ function animate() {
   // Calculate the elapsed time
   var now = Date.now();
   var elapsed = now - g_last;
-
+	g_last = now;
+	
 	var g_angle01min = -60.0;
 	var g_angle01max =  60.0;
   
@@ -570,41 +544,6 @@ function animate() {
 	
 	g_angle01 = (g_angle01 + (g_angle01Rate * elapsed) / 1000.0) % 360;
 	g_angle02 = (g_angle02 + (g_angle02Rate * elapsed) / 1000.0) % 360;
-}
-
-function animateSnake() {
-	var now = Date.now();
-	var elapsed = now - g_last;
-	g_last = now;
-
-	var angleLink1min = -60.0;
-	var angleLink1max =  60.0;
-
-	var angleLink2min = -50.0;
-	var angleLink2max =  50.0;
-
-	var angleLink3min = -40.0;
-	var angleLink3max =  40.0; 
-
-	var angleHeadmin = -10.0;
-	var angleHeadmax =  10.0;
-
-	if(g_angleLink1 >  angleLink1max && g_angleLink1Rate > 0) g_angleLink1Rate = -g_angleLink1Rate;
-	if(g_angleLink1 <  angleLink1min && g_angleLink1Rate < 0) g_angleLink1Rate = -g_angleLink1Rate;
-
-	if(g_angleLink2 >  angleLink2max && g_angleLink2Rate > 0) g_angleLink2Rate = -g_angleLink2Rate;
-	if(g_angleLink2 <  angleLink2min && g_angleLink2Rate < 0) g_angleLink2Rate = -g_angleLink2Rate;
-
-	if(g_angleLink3 >  angleLink3max && g_angleLink3Rate > 0) g_angleLink3Rate = -g_angleLink3Rate;
-	if(g_angleLink3 <  angleLink3min && g_angleLink3Rate < 0) g_angleLink3Rate = -g_angleLink3Rate;
-	
-	if(g_angleLink3 >  angleHeadmax && g_angleHeadRate > 0) g_angleHeadRate = -g_angleHeadRate;
-	if(g_angleLink3 <  angleHeadmin && g_angleHeadRate < 0) g_angleHeadRate = -g_angleHeadRate;
-	
-	g_angleLink1 = (g_angleLink1 + (g_angleLink1Rate * elapsed) / 1000.0)  % 360;
-	g_angleLink2 = (g_angleLink2 + (g_angleLink2Rate * elapsed) / 1000.0)  % 360;
-	g_angleLink3 = (g_angleLink3 + (g_angleLink3Rate * elapsed) / 1000.0)  % 360;	
-	g_angleHead  = (g_angleHead  + (g_angleHeadRate  * elapsed) / 1000.0)  % 360;
 }
 
 //==================HTML Button Callbacks======================
