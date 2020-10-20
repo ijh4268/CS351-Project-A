@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+	<title>Tie Fighter</title>
+    <link rel="stylesheet" type="text/css" href="ProjectA.css" />
+</head>
+<body onload="main()">
+    <h1>Instructions</h1>
+    <p>To start and stop the rotation of the checkpoint (bottom left figure), press the button.</p>
+    <p>To increase or decrease the rotation speed of the Tie Fighter's wings, use the corresponding buttons.</p>
+    <p>Click on the Tie Fighter and drag the mouse to move it around the canvas.</p>
+    <p>Clicking on the canvas will stop the rotation of the arm (bottom right).</p>
+    <p>Use w,a,s,d keys to move the arm around the canvas.</p>
+    <p>Stretch the base of the checkpoint by entering a value between 0.5 and 4.0 into the entry box.</p>
+    
+    <div id="buttonGroup">
+        <button type="button" class="buttons" id="freezeCheckpoint" onclick="freezeCheckpoint()">Freeze/Start Checkpoint</button>
+        <button type="button" class="buttons" id="increaseTaiFighterSpin" onclick="increaseTaiFighterSpin()">Increase Tie Fighter Spin</button>
+        <button type="button" class="buttons" id="decreaseTaiFighterSpin" onclick="decreaseTaiFighterSpin()">Decrease Tie Fighter Spin</button>
+        <div id="stretcher">
+            <p>Stretch Amount (>0.5 & <4.0 ): </p>
+            <input id="usrStretch" />
+            <button type="button" id="submit" onclick="onSubmitStretch()">Submit</button>
+        </div>
+    </div>
+
+    <canvas id="webgl" width="700" height="700">
+        Please use a browser that supports "canvas"
+    </canvas>
+
+	<script src="lib/webgl-utils.js"></script>
+	<script src="lib/webgl-debug.js"></script>
+	<script src="lib/cuon-utils.js"></script>
+	<script src="lib/cuon-matrix-mod.js"></script>
+	
+	<script src="Tie Fighter.js"></script>
+
+</body>
+</html>

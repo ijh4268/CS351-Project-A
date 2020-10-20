@@ -67,10 +67,10 @@ var g_lastMS = Date.now();    			// Timestamp for most-recently-drawn image;
                                     // in milliseconds; used by 'animate()' fcn 
                                     // (now called 'timerAll()' ) to find time
                                     // elapsed since last on-screen image.
-var g_angle01 = 0;                  // initial rotation angle
+var g_angle01 = 0.0;                  // initial rotation angle
 var g_angle01Rate = 45.0;           // rotation speed, in degrees/second 
 
-var g_angle02 = 0;
+var g_angle02 = 0.0;
 var g_angle02Rate = 20.0;
 
 var g_angleLink1 = 0.0;
@@ -100,6 +100,9 @@ var g_yDblMdragTot=0.0;
 var g_translatePyrX  = 0.0;
 var g_translatePyrY  = 0.0;
 var g_translatePyrRate = 0.3;
+
+var g_translateSnakeX = 0.0;
+var g_translateSnakeRate = 0.005;
 
 function main() {
 //==============================================================================
@@ -171,8 +174,8 @@ function main() {
 		
 		g_last = now;
 
-		drawAll();   // Draw all parts
-		drawHexagram(); // Draw Hexagram
+		drawAll();  
+		drawHexagram(); 
 		drawPyramid();
 		drawSnake();
 
@@ -459,7 +462,7 @@ function initVertexBuffer() {
 
 function drawPyramid() {
 
-		g_modelMatrix.setTranslate(-0.0, 0.3, 0); // Discard old matrix;
+		g_modelMatrix.setTranslate(-0.3, 0.3, 0); // Discard old matrix;
 		g_modelMatrix.scale(0.4, 0.4, 0.4);
 
 		
@@ -469,7 +472,7 @@ function drawPyramid() {
 		g_modelMatrix.rotate(g_angle02, 0, 1, 0);
 
 		g_modelMatrix.translate(-0.5, 0.0, 0.5);
-		pushMatrix(g_modelMatrix);
+	pushMatrix(g_modelMatrix);
 
 		gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements); // Send matrix data to the GPU
 		gl.drawArrays(gl.TRIANGLES, 0 /* Start index */, 18 /* Num vertices to draw */);
@@ -484,7 +487,7 @@ function drawPyramid() {
 }
 
 function drawHexagram() {
-	g_modelMatrix.setTranslate(0.5, -0.5, 0);
+	g_modelMatrix.setTranslate(0.5, 0.5, 0);
 	g_modelMatrix.scale(0.2, 0.2, 0.2);
 
 	g_modelMatrix.translate(g_xDblMdragTot * 8, g_yDblMdragTot * 8, 0);
@@ -498,7 +501,7 @@ function drawHexagram() {
 
 function drawSnake() {
 
-	g_modelMatrix.setTranslate(-0.5, -0.8, 0.0);
+	g_modelMatrix.setTranslate(g_translateSnakeX, -0.8, 0.0);
 	g_modelMatrix.scale(0.2, 0.2, 0.2);
 	g_modelMatrix.rotate(140.0, 0.0, 0.0, 1.0);
 	g_modelMatrix.rotate(g_angleLink1, 0.0, 0.0, 1.0);
@@ -589,6 +592,12 @@ function animateSnake() {
 	var angleHeadmin = -10.0;
 	var angleHeadmax =  10.0;
 
+	var translateXmax = 0.0;
+	var translateXmin = -0.5;
+
+	if(g_translateSnakeX > translateXmax && g_translateSnakeRate > 0) g_translateSnakeRate = -g_translateSnakeRate;
+	if(g_translateSnakeX < translateXmin && g_translateSnakeRate < 0) g_translateSnakeRate = -g_translateSnakeRate;
+
 	if(g_angleLink1 >  angleLink1max && g_angleLink1Rate > 0) g_angleLink1Rate = -g_angleLink1Rate;
 	if(g_angleLink1 <  angleLink1min && g_angleLink1Rate < 0) g_angleLink1Rate = -g_angleLink1Rate;
 
@@ -601,11 +610,13 @@ function animateSnake() {
 	if(g_angleLink3 >  angleHeadmax && g_angleHeadRate > 0) g_angleHeadRate = -g_angleHeadRate;
 	if(g_angleLink3 <  angleHeadmin && g_angleHeadRate < 0) g_angleHeadRate = -g_angleHeadRate;
 	
+	g_translateSnakeX += g_translateSnakeRate;
 	g_angleLink1 = (g_angleLink1 + (g_angleLink1Rate * elapsed) / 1000.0)  % 360;
 	g_angleLink2 = (g_angleLink2 + (g_angleLink2Rate * elapsed) / 1000.0)  % 360;
 	g_angleLink3 = (g_angleLink3 + (g_angleLink3Rate * elapsed) / 1000.0)  % 360;	
 	g_angleHead  = (g_angleHead  + (g_angleHeadRate  * elapsed) / 1000.0)  % 360;
 }
+
 
 //==================HTML Button Callbacks======================
 
@@ -633,12 +644,18 @@ function spinUp() {
 // Called when user presses the 'Spin >>' button on our webpage.
 // ?HOW? Look in the HTML file (e.g. ControlMulti.html) to find
 // the HTML 'button' element with onclick='spinUp()'.
-  g_angle02Rate += 25; 
+	g_angle02Rate += 25; 
+	g_angleLink1Rate += 5;
+	g_angle02Rate += 10;
+	g_angleLink3Rate += 15;
 }
 
 function spinDown() {
 // Called when user presses the 'Spin <<' button
  g_angle02Rate -= 25; 
+ g_angleLink1Rate -= 5;
+ g_angle02Rate -= 10;
+ g_angleLink3Rate -= 15;
 }
 
 function runStop() {
@@ -650,6 +667,7 @@ function runStop() {
 		g_angleLink1RateTmp = g_angleLink1Rate;
 		g_angleLink2RateTmp = g_angleLink2Rate;
 		g_angleLink3RateTmp = g_angleLink3Rate;
+		g_translateSnakeRateTmp = g_translateSnakeRate;
 
 		g_angle01Rate = 0;      // and set to zero.  
 		g_angle02Rate = 0;
@@ -657,6 +675,7 @@ function runStop() {
 		g_angleLink1Rate = 0;
 		g_angleLink2Rate = 0;
 		g_angleLink3Rate = 0;
+		g_translateSnakeRate = 0;
   }
   else {    // but if rate is zero,
 		g_angle01Rate = g_angle01RateTmp;  // use the stored rate.
@@ -665,6 +684,7 @@ function runStop() {
 		g_angleLink1Rate = g_angleLink1RateTmp;
 		g_angleLink2Rate = g_angleLink2RateTmp;
 		g_angleLink3Rate = g_angleLink3RateTmp;
+		g_translateSnakeRate = g_translateSnakeRateTmp;
   }
 }
 
