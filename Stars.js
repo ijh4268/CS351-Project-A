@@ -67,22 +67,42 @@ var g_lastMS = Date.now();    			// Timestamp for most-recently-drawn image;
                                     // in milliseconds; used by 'animate()' fcn 
                                     // (now called 'timerAll()' ) to find time
                                     // elapsed since last on-screen image.
-var g_angle01 = 0;                  // initial rotation angle
+var g_angle01 = 0.0;                  // initial rotation angle
 var g_angle01Rate = 45.0;           // rotation speed, in degrees/second 
 
-var g_angle02 = 180.0;
+var g_angle02 = 0.0;
 var g_angle02Rate = 20.0;
+
+var g_angleLink1 = 0.0;
+var g_angleLink1Rate = 10.0;
+
+var g_angleLink2 = 0.0;
+var g_angleLink2Rate = 15.0;
+
+var g_angleLink3 = 0.0;
+var g_angleLink3Rate = 20.0;
+
+var g_angleHead = 0.0;
+var g_angleHeadRate = 5.0;
+
 
 //------------For mouse click-and-drag: -------------------------------
 var g_isDrag=false;		// mouse-drag: true when user holds down mouse button
-var g_isDoubleClick = false; // double-click: 
+var g_isDoubleClick=false; // double-click: 
 var g_xMclik=0.0;			// last mouse button-down position (in CVV coords)
 var g_yMclik=0.0;   
 var g_xMdragTot=0.0;	// total (accumulated) mouse-drag amounts (in CVV coords).
 var g_yMdragTot=0.0;
 
-var g_xDblMdragTot = 0.0; // total (accumulated) mouse-drag on double click 
-var g_yDblMdragTot = 0.0;
+var g_xDblMdragTot=0.0; // total (accumulated) mouse-drag on double click 
+var g_yDblMdragTot=0.0;
+
+var g_translatePyrX  = 0.0;
+var g_translatePyrY  = 0.0;
+var g_translatePyrRate = 0.3;
+
+var g_translateSnakeX = 0.0;
+var g_translateSnakeRate = 0.005;
 
 function main() {
 //==============================================================================
@@ -110,58 +130,19 @@ function main() {
   if (g_maxVerts < 0) {
     console.log('Failed to set the vertex information');
     return;
-  }
-
-	// Register the Keyboard & Mouse Event-handlers------------------------------
-	// When users move, click or drag the mouse and when they press a key on the 
-	// keyboard the operating system create a simple text-based 'event' message.
-	// Your Javascript program can respond to 'events' if you:
-	// a) tell JavaScript to 'listen' for each event that should trigger an
-	//   action within your program: call the 'addEventListener()' function, and 
-	// b) write your own 'event-handler' function for each of the user-triggered 
-	//    actions; Javascript's 'event-listener' will call your 'event-handler'
-	//		function each time it 'hears' the triggering event from users.
-	//
-  // KEYBOARD:
-  // The 'keyDown' and 'keyUp' events respond to ALL keys on the keyboard,
-  //      including shift,alt,ctrl,arrow, pgUp, pgDn,f1,f2...f12 etc. 
+	}
+	
+	//--------------- Event Handlers --------------------
 	window.addEventListener("keydown", myKeyDown, false);
-	// After each 'keydown' event, call the 'myKeyDown()' function.  The 'false' 
-	// arg (default) ensures myKeyDown() call in 'bubbling', not 'capture' stage)
-	// ( https://www.w3schools.com/jsref/met_document_addeventlistener.asp )
 	window.addEventListener("keyup", myKeyUp, false);
-	// Called when user RELEASES the key.  Now rarely used...
-
-	// MOUSE:
-	// Create 'event listeners' for a few vital mouse events 
-	// (others events are available too... google it!).  
 	window.addEventListener("mousedown", myMouseDown); 
-	// (After each 'mousedown' event, browser calls the myMouseDown() fcn.)
-  window.addEventListener("mousemove", myMouseMove); 
+	window.addEventListener("mousemove", myMouseMove); 
 	window.addEventListener("mouseup", myMouseUp);	
 	window.addEventListener("click", myMouseClick);				
 	window.addEventListener("dblclick", myMouseDblClick); 
-	// Note that these 'event listeners' will respond to mouse click/drag 
-	// ANYWHERE, as long as you begin in the browser window 'client area'.  
-	// You can also make 'event listeners' that respond ONLY within an HTML-5 
-	// element or division. For example, to 'listen' for 'mouse click' only
-	// within the HTML-5 canvas where we draw our WebGL results, try:
-	// g_canvasID.addEventListener("click", myCanvasClick);
-  //
-	// Wait wait wait -- these 'mouse listeners' just NAME the function called 
-	// when the event occurs!   How do the functions get data about the event?
-	//  ANSWER1:----- Look it up:
-	//    All mouse-event handlers receive one unified 'mouse event' object:
-	//	  https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent
-	//  ANSWER2:----- Investigate:
-	// 		All Javascript functions have a built-in local variable/object named 
-	//    'argument'.  It holds an array of all values (if any) found in within
-	//	   the parintheses used in the function call.
-  //     DETAILS:  https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/arguments
-	// END Keyboard & Mouse Event-Handlers---------------------------------------
 	
   // Specify the color for clearing <canvas>
-  gl.clearColor(0.3, 0.3, 0.3, 1.0);
+  gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
 	// NEW!! Enable 3D depth-test when drawing: don't over-draw at any pixel 
 	// unless the new Z value is closer to the eye than the old one..
@@ -186,22 +167,18 @@ function main() {
   // ANIMATION: create 'tick' variable whose value is this function:
   //----------------- 
   var tick = function() {
-    animate();  // Update the rotation angle
-    drawAll();   // Draw all parts
-//    console.log('g_angle01=',g_angle01.toFixed(5)); // put text in console.
+		var now = Date.now();
+		
+		animate();  // Update the rotation angle
+		animateSnake();
+		
+		g_last = now;
 
-//	Show some always-changing text in the webpage :  
-//		--find the HTML element called 'CurAngleDisplay' in our HTML page,
-//			 	(a <div> element placed just after our WebGL 'canvas' element)
-// 				and replace it's internal HTML commands (if any) with some
-//				on-screen text that reports our current angle value:
-//		--HINT: don't confuse 'getElementByID() and 'getElementById()
-		document.getElementById('CurAngleDisplay').innerHTML= 
-			'g_angle01= '+g_angle01.toFixed(5);
-		// Also display our current mouse-dragging state:
-		document.getElementById('Mouse').innerHTML=
-			'Mouse Drag totals (CVV coords):\t'+
-			g_xMdragTot.toFixed(5)+', \t'+g_yMdragTot.toFixed(5);	
+		drawAll();  
+		drawHexagram(); 
+		drawPyramid();
+		drawSnake();
+
 		//--------------------------------
     requestAnimationFrame(tick, g_canvas);   
     									// Request that the browser re-draw the webpage
@@ -215,14 +192,14 @@ function initVertexBuffer() {
 //==============================================================================
 // NOTE!  'gl' is now a global variable -- no longer needed as fcn argument!
 	
-	var s60 = Math.sqrt(3.0)/2.0;      // == sin(60deg) == sqrt(2) / 2
-	var c60 = 0.5;
+	const s60 = Math.sqrt(3.0)/2.0;      // == sin(60deg) == sqrt(3) / 2
+	const c60 = 0.5;										 // == cos(60deg) == 1 / 2
 
-	var s30 = 0.5;
-	var c30 = Math.sqrt(3.0)/2.0;
+	const s30 = 0.5;										 // == sin(30deg) == 1 / 2
+	const c30 = Math.sqrt(3.0)/2.0;			 // == cos(30deg) == sqrt(3) / 2
 
 
-  var colorShapes = new Float32Array([
+  const colorShapes = new Float32Array([
 
 		 //! ------------------------ Pyramid ------------------------
 
@@ -484,15 +461,85 @@ function initVertexBuffer() {
 }
 
 function drawPyramid() {
-	gl.drawArrays(gl.TRIANGLES, 0 /* Start index */, 18 /* Num vertices to draw */);
+
+		g_modelMatrix.setTranslate(-0.3, 0.3, 0); // Discard old matrix;
+		g_modelMatrix.scale(0.4, 0.4, 0.4);
+
+		
+		g_modelMatrix.translate(g_translatePyrX, g_translatePyrY, 0.0); 
+		
+		g_modelMatrix.rotate(g_angle01, 1, 0, 1);
+		g_modelMatrix.rotate(g_angle02, 0, 1, 0);
+
+		g_modelMatrix.translate(-0.5, 0.0, 0.5);
+	pushMatrix(g_modelMatrix);
+
+		gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements); // Send matrix data to the GPU
+		gl.drawArrays(gl.TRIANGLES, 0 /* Start index */, 18 /* Num vertices to draw */);
+
+	g_modelMatrix = popMatrix();
+
+		g_modelMatrix.translate(0.5, 1.1, -0.6);
+		g_modelMatrix.scale(0.5, 0.5, 0.5);
+		g_modelMatrix.rotate(g_angle01, 1, 0, 0);
+		gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
+		gl.drawArrays(gl.TRIANGLES, 66 /* Start index */, 42 /* Num vertices to draw */); // draw Concave Hex
 }
 
 function drawHexagram() {
-	gl.drawArrays(gl.TRIANGLES, 18 /* Start index */, 48 /* Num vertices to draw */);
+	g_modelMatrix.setTranslate(0.5, 0.5, 0);
+	g_modelMatrix.scale(0.2, 0.2, 0.2);
+
+	g_modelMatrix.translate(g_xDblMdragTot * 8, g_yDblMdragTot * 8, 0);
+
+	var dist = Math.sqrt(g_xMdragTot*g_xMdragTot + g_yMdragTot*g_yMdragTot);
+	g_modelMatrix.rotate(dist*120.0, -g_yMdragTot+0.0001, g_xMdragTot+0.0001, 0.0);
+
+	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements); // Send matrix to GPU
+	gl.drawArrays(gl.TRIANGLES, 18 /* Start index */, 48 /* Num vertices to draw */); // Draw 3D Hexagram
 }
 
-function drawConcaveHex() {
-	gl.drawArrays(gl.TRIANGLES, 66 /* Start index */, 42 /* Num vertices to draw */);
+function drawSnake() {
+
+	g_modelMatrix.setTranslate(g_translateSnakeX, -0.8, 0.0);
+	g_modelMatrix.scale(0.2, 0.2, 0.2);
+	g_modelMatrix.rotate(140.0, 0.0, 0.0, 1.0);
+	g_modelMatrix.rotate(g_angleLink1, 0.0, 0.0, 1.0);
+	g_modelMatrix.translate(0.0, -1.0, 0.0);
+	pushMatrix(g_modelMatrix);
+	g_modelMatrix.rotate(g_angle01, 0.0, 0.5, 0.0);
+	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
+	
+	// * First link
+	gl.drawArrays(gl.TRIANGLES, 66 /* Start index */, 42 /* Num vertices to draw */); // Draw a Concave Hexagon
+	
+	g_modelMatrix.rotate(g_angleLink2, 0.0, 0.0, 1.0);
+	g_modelMatrix.translate(0.0, -1.0, 0.0);
+	pushMatrix(g_modelMatrix);
+	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
+	// * Second link
+	gl.drawArrays(gl.TRIANGLES, 66, 42);
+
+	g_modelMatrix = popMatrix();
+	pushMatrix(g_modelMatrix);
+
+	g_modelMatrix.rotate(g_angleLink3, 0.0, 0.0, 1.0);
+	g_modelMatrix.translate(0.0, -1.0, 0.0);
+	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
+	pushMatrix(g_modelMatrix);
+	// * Third Link
+	gl.drawArrays(gl.TRIANGLES, 66, 42);
+
+	g_modelMatrix = popMatrix();
+
+	g_modelMatrix.translate(0.0, -0.5, 0.5);
+	g_modelMatrix.scale(0.5, 0.5, 0.5);
+	g_modelMatrix.rotate(30.0, 0.0, 0.0, 1.0);
+	g_modelMatrix.rotate(g_angleHead, 0.0, 0.0, 1.0);
+	g_modelMatrix.translate(-0.2, -0.2, 0.0);
+	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
+	// * Head
+	gl.drawArrays(gl.TRIANGLES, 18, 48); // Draw 3D Hexagram
 }
 
 function drawAll() {
@@ -503,34 +550,9 @@ function drawAll() {
 	clrColr = new Float32Array(4);
 	clrColr = gl.getParameter(gl.COLOR_CLEAR_VALUE);
 	// console.log("clear value:", clrColr);
-pushMatrix(g_modelMatrix);
-	g_modelMatrix.setTranslate(-0.6, 0.3, 0); // Discard old matrix; new matrix at origin of CVV
-	g_modelMatrix.scale(0.5, 0.5, 0.5);
-	g_modelMatrix.scale(1, 1, -1);
-	g_modelMatrix.rotate(g_angle01, 1, 1, 0);
-	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements); // Send matrix data to the GPU
-
-	drawPyramid(); // Draw Pyramid
-
-	g_modelMatrix = popMatrix();
-	g_modelMatrix.setTranslate(0.5, -0.5, 0);
-	g_modelMatrix.scale(0.2, 0.2, 0.2);
-
-	g_modelMatrix.translate(g_xDblMdragTot * 8, g_yDblMdragTot * 8, 0);
-
-	var dist = Math.sqrt(g_xMdragTot*g_xMdragTot + g_yMdragTot*g_yMdragTot);
-	g_modelMatrix.rotate(dist*120.0, -g_yMdragTot+0.0001, g_xMdragTot+0.0001, 0.0);
-
-	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements); // Send matrix to GPU
-
-	drawHexagram(); // Draw Hexagram
-
-	// g_modelMatrix.setTranslate(0.0, -0.3, 0);
-	// g_modelMatrix.scale(0.5, 0.5, 0.5);
-	// gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
-
 
 }
+
 
 // Last time that this function was called:  (used for animation timing)
 var g_last = Date.now();
@@ -540,25 +562,61 @@ function animate() {
   // Calculate the elapsed time
   var now = Date.now();
   var elapsed = now - g_last;
-	g_last = now;
-	
-	var g_angle01min = -120.0;
-	var g_angle01max =  120.0;
 
-	var g_angle02min = -45.0;
-	var g_angle02max =  45.0;
+	var g_angle01min = -60.0;
+	var g_angle01max =  60.0;
   
   // Update the current rotation angle (adjusted by the elapsed time)
   //  limit the angle to move smoothly between +120 and -120 degrees:
   if(g_angle01 >  g_angle01max && g_angle01Rate > 0) g_angle01Rate = -g_angle01Rate;
 	if(g_angle01 <  g_angle01min && g_angle01Rate < 0) g_angle01Rate = -g_angle01Rate;
 	
-	if(g_angle02 >  g_angle02max && g_angle02Rate > 0) g_angle02Rate = -g_angle02Rate;
-	if(g_angle02 <  g_angle02min && g_angle02Rate < 0) g_angle02Rate = -g_angle02Rate;
-  
-	g_angle01 = g_angle01 + (g_angle01Rate * elapsed) / 1000.0;
-	g_angle02 = g_angle02 + (g_angle02Rate * elapsed) / 1000.0;
+	g_angle01 = (g_angle01 + (g_angle01Rate * elapsed) / 1000.0) % 360;
+	g_angle02 = (g_angle02 + (g_angle02Rate * elapsed) / 1000.0) % 360;
 }
+
+function animateSnake() {
+	var now = Date.now();
+	var elapsed = now - g_last;
+	g_last = now;
+
+	var angleLink1min = -60.0;
+	var angleLink1max =  60.0;
+
+	var angleLink2min = -50.0;
+	var angleLink2max =  50.0;
+
+	var angleLink3min = -40.0;
+	var angleLink3max =  40.0; 
+
+	var angleHeadmin = -10.0;
+	var angleHeadmax =  10.0;
+
+	var translateXmax = 0.0;
+	var translateXmin = -0.5;
+
+	if(g_translateSnakeX > translateXmax && g_translateSnakeRate > 0) g_translateSnakeRate = -g_translateSnakeRate;
+	if(g_translateSnakeX < translateXmin && g_translateSnakeRate < 0) g_translateSnakeRate = -g_translateSnakeRate;
+
+	if(g_angleLink1 >  angleLink1max && g_angleLink1Rate > 0) g_angleLink1Rate = -g_angleLink1Rate;
+	if(g_angleLink1 <  angleLink1min && g_angleLink1Rate < 0) g_angleLink1Rate = -g_angleLink1Rate;
+
+	if(g_angleLink2 >  angleLink2max && g_angleLink2Rate > 0) g_angleLink2Rate = -g_angleLink2Rate;
+	if(g_angleLink2 <  angleLink2min && g_angleLink2Rate < 0) g_angleLink2Rate = -g_angleLink2Rate;
+
+	if(g_angleLink3 >  angleLink3max && g_angleLink3Rate > 0) g_angleLink3Rate = -g_angleLink3Rate;
+	if(g_angleLink3 <  angleLink3min && g_angleLink3Rate < 0) g_angleLink3Rate = -g_angleLink3Rate;
+	
+	if(g_angleLink3 >  angleHeadmax && g_angleHeadRate > 0) g_angleHeadRate = -g_angleHeadRate;
+	if(g_angleLink3 <  angleHeadmin && g_angleHeadRate < 0) g_angleHeadRate = -g_angleHeadRate;
+	
+	g_translateSnakeX += g_translateSnakeRate;
+	g_angleLink1 = (g_angleLink1 + (g_angleLink1Rate * elapsed) / 1000.0)  % 360;
+	g_angleLink2 = (g_angleLink2 + (g_angleLink2Rate * elapsed) / 1000.0)  % 360;
+	g_angleLink3 = (g_angleLink3 + (g_angleLink3Rate * elapsed) / 1000.0)  % 360;	
+	g_angleHead  = (g_angleHead  + (g_angleHeadRate  * elapsed) / 1000.0)  % 360;
+}
+
 
 //==================HTML Button Callbacks======================
 
@@ -572,7 +630,6 @@ function angleSubmit() {
 	var UsrTxt = document.getElementById('usrAngle').value;	
 // Display what we read from the edit-box: use it to fill up
 // the HTML 'div' element with id='editBoxOut':
-  document.getElementById('EditBoxOut').innerHTML ='You Typed: '+UsrTxt;
   console.log('angleSubmit: UsrTxt:', UsrTxt); // print in console, and
   g_angle01 = parseFloat(UsrTxt);     // convert string to float number 
 };
@@ -587,22 +644,47 @@ function spinUp() {
 // Called when user presses the 'Spin >>' button on our webpage.
 // ?HOW? Look in the HTML file (e.g. ControlMulti.html) to find
 // the HTML 'button' element with onclick='spinUp()'.
-  g_angle01Rate += 25; 
+	g_angle02Rate += 25; 
+	g_angleLink1Rate += 5;
+	g_angle02Rate += 10;
+	g_angleLink3Rate += 15;
 }
 
 function spinDown() {
 // Called when user presses the 'Spin <<' button
- g_angle01Rate -= 25; 
+ g_angle02Rate -= 25; 
+ g_angleLink1Rate -= 5;
+ g_angle02Rate -= 10;
+ g_angleLink3Rate -= 15;
 }
 
 function runStop() {
 // Called when user presses the 'Run/Stop' button
   if(g_angle01Rate*g_angle01Rate > 1) {  // if nonzero rate,
-    myTmp = g_angle01Rate;  // store the current rate,
-    g_angle01Rate = 0;      // and set to zero.
+		g_angle01RateTmp = g_angle01Rate;  // store the current rate,
+		g_angle02RateTmp = g_angle02Rate;
+		g_angleHeadRateTmp = g_angleHeadRate;
+		g_angleLink1RateTmp = g_angleLink1Rate;
+		g_angleLink2RateTmp = g_angleLink2Rate;
+		g_angleLink3RateTmp = g_angleLink3Rate;
+		g_translateSnakeRateTmp = g_translateSnakeRate;
+
+		g_angle01Rate = 0;      // and set to zero.  
+		g_angle02Rate = 0;
+		g_angleHeadRate = 0;
+		g_angleLink1Rate = 0;
+		g_angleLink2Rate = 0;
+		g_angleLink3Rate = 0;
+		g_translateSnakeRate = 0;
   }
   else {    // but if rate is zero,
-  	g_angle01Rate = myTmp;  // use the stored rate.
+		g_angle01Rate = g_angle01RateTmp;  // use the stored rate.
+		g_angle02Rate = g_angle02RateTmp;
+		g_angleHeadRate = g_angleHeadRateTmp;
+		g_angleLink1Rate = g_angleLink1RateTmp;
+		g_angleLink2Rate = g_angleLink2RateTmp;
+		g_angleLink3Rate = g_angleLink3RateTmp;
+		g_translateSnakeRate = g_translateSnakeRateTmp;
   }
 }
 
@@ -628,8 +710,6 @@ function myMouseDown(ev) {
 		g_yMclik = y;
 	console.log("myMouseClick() on button: ", ev.button); 
 	// report on webpage
-	document.getElementById('MouseAtResult').innerHTML = 
-	  'Mouse At: '+x.toFixed(5)+', '+y.toFixed(5);
 };
 
 
@@ -664,11 +744,7 @@ function myMouseMove(ev) {
 		g_xMdragTot += (x - g_xMclik);					// Accumulate change-in-mouse-position,&
 		g_yMdragTot += (y - g_yMclik);
 	}
-	// Report new mouse position & how far we moved on webpage:
-	document.getElementById('MouseAtResult').innerHTML = 
-	  'Mouse At: '+x.toFixed(5)+', '+y.toFixed(5);
-	document.getElementById('MouseDragResult').innerHTML = 
-	  'Mouse Drag: '+(x - g_xMclik).toFixed(5)+', '+(y - g_yMclik).toFixed(5);
+	// Report new mouse position & how far we moved on webpage
 
 	g_xMclik = x;													// Make next drag-measurement from here.
 	g_yMclik = y;
@@ -706,8 +782,6 @@ function myMouseUp(ev) {
 		g_yMdragTot += (y - g_yMclik);
 	}
 	// Report new mouse position:
-	document.getElementById('MouseAtResult').innerHTML = 
-	  'Mouse At: '+x.toFixed(5)+', '+y.toFixed(5);
 	console.log('myMouseUp: g_xMdragTot,g_yMdragTot =',g_xMdragTot,',\t',g_yMdragTot);
 };
 
@@ -747,8 +821,6 @@ function myMouseDblClick(ev) {
 	g_xMclik = x;													// record where mouse-dragging began
 	g_yMclik = y;
 	// report on webpage
-	document.getElementById('MouseAtResult').innerHTML = 
-	  'Mouse At: '+x.toFixed(5)+', '+y.toFixed(5);
 	console.log("myMouse-DOUBLE-Click() on button: ", ev.button); 
 }	
 
@@ -771,20 +843,9 @@ function myKeyDown(kev) {
               "\n--kev.ctrlKey:", kev.ctrlKey,  "\t--kev.shiftKey:",kev.shiftKey,
               "\n--kev.altKey:",  kev.altKey,   "\t--kev.metaKey:", kev.metaKey);
 
-// and report EVERYTHING on webpage:
-	document.getElementById('KeyDownResult').innerHTML = ''; // clear old results
-  document.getElementById('KeyModResult' ).innerHTML = ''; 
-  // key details:
-  document.getElementById('KeyModResult' ).innerHTML = 
-        "   --kev.code:"+kev.code   +"      --kev.key:"+kev.key+
-    "<br>--kev.ctrlKey:"+kev.ctrlKey+" --kev.shiftKey:"+kev.shiftKey+
-    "<br>--kev.altKey:"+kev.altKey +"  --kev.metaKey:"+kev.metaKey;
- 
 	switch(kev.code) {
 		case "KeyP":
 			console.log("Pause/unPause!\n");                // print on console,
-			document.getElementById('KeyDownResult').innerHTML =  
-			'myKeyDown() found p/P key. Pause/unPause!';   // print on webpage
 			if(g_isRun==true) {
 			  g_isRun = false;    // STOP animation
 			  }
@@ -795,52 +856,17 @@ function myKeyDown(kev) {
 			break;
 		//------------------WASD navigation-----------------
 		case "KeyA":
-			console.log("a/A key: Strafe LEFT!\n");
-			document.getElementById('KeyDownResult').innerHTML =  
-			'myKeyDown() found a/A key. Strafe LEFT!';
+			g_translatePyrX -= g_translatePyrRate;
 			break;
     case "KeyD":
-			console.log("d/D key: Strafe RIGHT!\n");
-			document.getElementById('KeyDownResult').innerHTML = 
-			'myKeyDown() found d/D key. Strafe RIGHT!';
+			g_translatePyrX += g_translatePyrRate;
 			break;
 		case "KeyS":
-			console.log("s/S key: Move BACK!\n");
-			document.getElementById('KeyDownResult').innerHTML = 
-			'myKeyDown() found s/Sa key. Move BACK.';
+			g_translatePyrY -= g_translatePyrRate;
 			break;
 		case "KeyW":
-			console.log("w/W key: Move FWD!\n");
-			document.getElementById('KeyDownResult').innerHTML =  
-			'myKeyDown() found w/W key. Move FWD!';
+			g_translatePyrY += g_translatePyrRate;
 			break;
-		//----------------Arrow keys------------------------
-		case "ArrowLeft": 	
-			console.log(' left-arrow.');
-			// and print on webpage in the <div> element with id='Result':
-  		document.getElementById('KeyDownResult').innerHTML =
-  			'myKeyDown(): Left Arrow='+kev.keyCode;
-			break;
-		case "ArrowRight":
-			console.log('right-arrow.');
-  		document.getElementById('KeyDownResult').innerHTML =
-  			'myKeyDown():Right Arrow:keyCode='+kev.keyCode;
-  		break;
-		case "ArrowUp":		
-			console.log('   up-arrow.');
-  		document.getElementById('KeyDownResult').innerHTML =
-  			'myKeyDown():   Up Arrow:keyCode='+kev.keyCode;
-			break;
-		case "ArrowDown":
-			console.log(' down-arrow.');
-  		document.getElementById('KeyDownResult').innerHTML =
-  			'myKeyDown(): Down Arrow:keyCode='+kev.keyCode;
-  		break;	
-    default:
-      console.log("UNUSED!");
-  		document.getElementById('KeyDownResult').innerHTML =
-  			'myKeyDown(): UNUSED!';
-      break;
 	}
 }
 
